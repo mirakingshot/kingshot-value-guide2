@@ -102,6 +102,9 @@ a.pill{text-decoration:none}
 .chip[aria-current]{background:linear-gradient(90deg,#e8e0ff,#ffe3f0);color:var(--lav-ink);border-color:#fff}
 .chip:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
 details.card{scroll-margin-top:20px}
+.big-link.past{filter:grayscale(1);opacity:.6}
+.big-link.past:hover,.big-link.past:focus-visible{opacity:.9}
+.pill.grey{background:#ececf1;color:#6b6a7a}
 .big-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
 .big-link{--tint:#f3efff;display:flex;flex-direction:column;gap:6px;padding:20px;border-radius:22px;text-decoration:none;color:var(--ink);border:1px solid #fff;background:linear-gradient(135deg,rgba(255,255,255,.95),var(--tint));box-shadow:0 8px 28px rgba(120,90,200,.09);transition:transform .15s,box-shadow .15s}
 .big-link:nth-child(3n+2){--tint:#ffeaf4}.big-link:nth-child(3n){--tint:#fff1e6}

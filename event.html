@@ -5,7 +5,7 @@
 <script src="app.js"></script>
 <script>
 header("event.html");
-Promise.all([unitValues(), get("shops"), get("popups")]).then(([m, { shops }, { popups }]) => {
+Promise.all([unitValues(), get("shops"), get("popups"), get("events").catch(() => ({ events: [] }))]).then(([m, { shops }, { popups }, { events: meta }]) => {
   const packs = scorePacks(m, popups);
   const events = new Map();
   const slot = n => {
@@ -20,20 +20,28 @@ Promise.all([unitValues(), get("shops"), get("popups")]).then(([m, { shops }, { 
   const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
 
   if (!want) {
-    const list = [...events.values()];
+    const list = [...events.values()].map((e, i) => {
+      const md = meta.find(x => x.event.trim().toLowerCase() === e.name.toLowerCase());
+      return { ...e, i, st: eventStatus(md) };
+    }).sort((a, b) => stateRank[a.st.state] - stateRank[b.st.state]
+      || (a.st.state === "past" ? b.st.end - a.st.end : a.st.state === "active" && a.st.end && b.st.end ? a.st.end - b.st.end : a.i - b.i));
+    const nowCount = list.filter(e => e.st.state !== "past").length;
     stats([
-      ["Events tracked", list.length, "star", ""],
+      ["Active or upcoming", nowCount, "star", ""],
+      ["Past events", list.length - nowCount, "list", ""],
       ["Currency shops in events", list.reduce((a, e) => a + e.shops.length, 0), "bag", "pink"],
       ["Pop-up packs in events", list.reduce((a, e) => a + e.packs.length, 0), "gift", "peach"]
     ]);
     body.innerHTML = `<div class="card"><div class="card-head"><div><h2>Choose an event</h2><p>Holiday and limited-time events, each with its currency shop and pop-up packs on one page.</p></div></div>` +
       (list.length
-        ? `<div class="big-links">${list.map(e => bigLink("event.html?e=" + encodeURIComponent(e.name), "star", e.name, plural(e.shops.length, "currency shop") + ", " + plural(e.packs.length, "pop-up pack"))).join("")}</div>`
+        ? `<div class="big-links">${list.map(e => bigLink("event.html?e=" + encodeURIComponent(e.name), "star", e.name, plural(e.shops.length, "currency shop") + ", " + plural(e.packs.length, "pop-up pack"), e.st.state === "active" && !e.st.end ? "" : e.st.label, e.st.state === "past" ? "past" : "", e.st.state === "past" ? "grey" : e.st.state === "upcoming" ? "" : "green")).join("")}</div>`
         : `<p class="dim">No events yet. Type a holiday event name, such as Halloween, in the event column of its pop-up packs and currency shop rows in your sheet and it will show up here.</p>`) + `</div>`;
     return;
   }
 
   const ev = events.get(want.trim().toLowerCase());
+  const md = ev && meta.find(x => x.event.trim().toLowerCase() === ev.name.toLowerCase());
+  const st = eventStatus(md);
   if (!ev) {
     stats([]);
     body.innerHTML = `<div class="card"><p>That event was not found. <a href="event.html">See all special events</a>.</p></div>`;
@@ -42,7 +50,7 @@ Promise.all([unitValues(), get("shops"), get("popups")]).then(([m, { shops }, { 
   document.title = ev.name + " - Mira’s KS Value Guide";
   document.querySelector("h1").textContent = ev.name;
   document.querySelector(".eyebrow").innerHTML = `<a href="event.html">Special events</a> / ${esc(ev.name)}`;
-  document.querySelector(".sub").textContent = "Currency shop and pop-up packs for this event, valued at regular pack prices.";
+  document.querySelector(".sub").innerHTML = `Currency shop and pop-up packs for this event, valued at regular pack prices. <span class="pill ${st.state === "past" ? "grey" : st.state === "upcoming" ? "amber" : "green"}">${st.label}</span>`;
   const views = ev.shops.map(s => shopView(m, s));
   stats([
     ["Pop-up packs", ev.packs.length, "gift", ""],

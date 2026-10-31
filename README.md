@@ -11,12 +11,15 @@ Import `data/values.csv`, `data/shops.csv`, `data/popups.csv`, `data/featured.cs
 
 - **values**: item, qty, usd, source, superseded. Unit value = usd / qty. Put TRUE in superseded to ignore a line.
 - **shops**: shop, item, tokens, event (optional). One row per shop item. A new shop name starts a new table.
-- **featured**: title, description, url, badge. Each row becomes a big button on the dashboard under Special event packs. url can be a page in this site (popups.html) or a full link; badge is optional (e.g. Ends Nov 7).
+- **featured**: title, description, url, badge (optional `event` column too). If the url is an event page (event.html?e=Halloween) or the `event` column names an event with dates in the `events` tab, the button shows its active, upcoming or ended tag, and ended events are greyed and listed last. Each row becomes a big button on the dashboard under Special event packs. url can be a page in this site (popups.html) or a full link; badge is optional (e.g. Ends Nov 7).
 - **popups**: pack, price, limit, item, qty, event (optional). One row per item in the pack; repeat the pack name and price on each row.
 
 Then for each tab: File > Share > Publish to web > pick the tab > Comma-separated values (.csv) > Publish. Paste each link into `config.js` and commit once. After that, editing cells updates the site (Google refreshes published sheets every few minutes).
 
 Tips: format number columns as plain numbers. Item names must match exactly between tabs. Items missing from values show as unpriced.
+
+## Active and past events
+Add an optional `events` tab with the columns `event, start, end` (dates like 2026-10-25, or whatever format Google Sheets shows). The event name must match the `event` column on shops and packs. Events whose end date has passed are greyed out and listed last, still clickable, with an "Ended" label. Events with a future start show "Starts ...". An event with no row is treated as active. Publish the tab as CSV and paste the link into `config.js` on the `events` line.
 
 ## Pack builder
 `build.html` lets visitors type items from the masterlist plus a total price and see the pack's worth and ratio at baseline. It uses the `values` tab, so it needs no extra setup.

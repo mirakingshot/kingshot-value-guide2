@@ -25,6 +25,7 @@ async function table(name) {
 
 async function get(name) {
   const rows = await table(name);
+  if (name === "events") return { events: rows.filter(r => r.event) };
   if (name === "values")
     return { values: rows.filter(r => r.item).map(r => ({ item: r.item, qty: num(r.qty), usd: num(r.usd), source: r.source, superseded: /^(true|yes|1|x)$/i.test(r.superseded) })) };
   if (name === "featured") return { featured: rows.filter(r => r.title) };
@@ -152,12 +153,12 @@ function scorePacks(m, popups) {
 }
 const verdict = r => r.ratio >= 1.25 ? ["Great", "green"] : r.ratio >= 0.9 ? ["Fair", "amber"] : ["Poor", "rose"];
 
-function bigLink(href, ic, title, desc, badge) {
+function bigLink(href, ic, title, desc, badge, cls = "", pillCls = "amber") {
   const url = /^\s*javascript:/i.test(href) ? "#" : href;
   const ext = /^https?:/i.test(url);
-  return `<a class="big-link" href="${esc(url)}"${ext ? ' target="_blank" rel="noopener"' : ""}><span class="tile">${icon(ic)}</span>` +
+  return `<a class="big-link ${cls}" href="${esc(url)}"${ext ? ' target="_blank" rel="noopener"' : ""}><span class="tile">${icon(ic)}</span>` +
     `<strong>${esc(title)}</strong><span class="desc">${esc(desc || "")}</span>` +
-    `<span class="go">${badge ? `<span class="pill amber">${esc(badge)}</span>` : "<span></span>"}<span class="go-arrow">${icon("go")}</span></span></a>`;
+    `<span class="go">${badge ? `<span class="pill ${pillCls}">${esc(badge)}</span>` : "<span></span>"}<span class="go-arrow">${icon("go")}</span></span></a>`;
 }
 
 function packDetail(r) {
@@ -203,3 +204,23 @@ const shopCols = [
   { key: "perToken", label: "$ per token", text: r => `<span class="strong">${fmt(r.perToken, 6)}</span>` },
   { key: "pct", label: "% of best", text: r => r.pct == null ? `<span class="pill amber">unpriced</span>` : `${Math.round(r.pct * 100)}%<span class="meter" style="width:${Math.round(r.pct * 60)}px"></span>` }
 ];
+
+function parseDate(v, endOfDay) {
+  if (!v) return null;
+  const iso = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(v.trim());
+  const d = iso ? new Date(+iso[1], +iso[2] - 1, +iso[3]) : new Date(v);
+  if (isNaN(d)) return null;
+  if (endOfDay) d.setHours(23, 59, 59, 999);
+  return d;
+}
+const shortDate = d => d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+// meta: a row from the events tab (or undefined). Returns {state: active|upcoming|past, label, start, end}
+function eventStatus(meta) {
+  const start = meta ? parseDate(meta.start) : null, end = meta ? parseDate(meta.end, true) : null;
+  const now = new Date();
+  if (end && now > end) return { state: "past", label: "Ended " + shortDate(end), start, end };
+  if (start && now < start) return { state: "upcoming", label: "Starts " + shortDate(start), start, end };
+  return { state: "active", label: end ? "Active until " + shortDate(end) : "Active", start, end };
+}
+const stateRank = { active: 0, upcoming: 1, past: 2 };

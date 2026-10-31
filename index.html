@@ -9,8 +9,8 @@
 <script src="app.js"></script>
 <script>
 header("index.html");
-Promise.all([unitValues(), get("shops"), get("popups"), get("featured").catch(() => ({ featured: [] }))])
-.then(([m, { shops }, { popups }, { featured }]) => {
+Promise.all([unitValues(), get("shops"), get("popups"), get("featured").catch(() => ({ featured: [] })), get("events").catch(() => ({ events: [] }))])
+.then(([m, { shops }, { popups }, { featured }, { events: meta }]) => {
   const packs = scorePacks(m, popups).filter(p => !p.event);
   stats([
     ["Items valued", Object.keys(m).length, "list", ""],
@@ -18,8 +18,17 @@ Promise.all([unitValues(), get("shops"), get("popups"), get("featured").catch(()
     ["Pop-up packs", packs.length, "gift", "peach"],
     ["Best pop-up ratio", packs.length ? Math.max(...packs.map(r => r.ratio)).toFixed(2) + "x" : "none yet", "bars", ""]
   ]);
-  document.getElementById("featured").innerHTML = featured.length
-    ? featured.map(f => bigLink(f.url || "popups.html", "gift", f.title, f.description, f.badge)).join("")
+  const feats = featured.map((f, i) => {
+    let ev = (f.event || "").trim();
+    if (!ev) { try { ev = new URL(f.url || "", location.href).searchParams.get("e") || ""; } catch (e) {} }
+    const md = ev && meta.find(x => x.event.trim().toLowerCase() === ev.toLowerCase());
+    return { ...f, i, st: md ? eventStatus(md) : null };
+  }).sort((a, b) => stateRank[a.st ? a.st.state : "active"] - stateRank[b.st ? b.st.state : "active"] || a.i - b.i);
+  document.getElementById("featured").innerHTML = feats.length
+    ? feats.map(f => {
+        const s = f.st ? f.st.state : "active";
+        return bigLink(f.url || "popups.html", "gift", f.title, f.description, f.st ? f.st.label : f.badge, s === "past" ? "past" : "", s === "past" ? "grey" : s === "upcoming" ? "" : f.st ? "green" : "amber");
+      }).join("")
     : `<p class="dim">No featured packs yet. Add a row to the featured tab of your sheet.</p>`;
   document.getElementById("explore").innerHTML = [
     ["event.html", "star", "Special events", "Holiday events with their currency shop and packs."],
