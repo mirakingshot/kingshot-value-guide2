@@ -2,10 +2,11 @@
 <title>Event shops - Kingshot Value Guide</title><link rel="stylesheet" href="style.css"></head>
 <body><main><div id="shops"></div>
 <p class="note">Token value is the best $ per token in the shop, since that is what a token is worth if spent well. "% of best" compares every item to it. Items with no pack price are unpriced. Assumes 1 unit per purchase.</p></main>
+<script src="config.js"></script>
 <script src="app.js"></script>
 <script>
 header("shops.html");
-Promise.all([unitValues(), get("shops.json")]).then(([m, { shops }]) => {
+Promise.all([unitValues(), get("shops")]).then(([m, { shops }]) => {
   const root = document.getElementById("shops");
   shops.forEach((s, i) => {
     const rows = s.items.map(x => {

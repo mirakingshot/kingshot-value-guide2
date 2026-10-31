@@ -2,10 +2,11 @@
 <title>Pop-up packs - Kingshot Value Guide</title><link rel="stylesheet" href="style.css"></head>
 <body><main><div id="t"></div>
 <p class="note">Pack worth = what the same contents cost at regular pack rates. Ratio above 1.00x means better than regular packs. Great is 1.25x or more, fair is 0.90x to 1.25x, poor is under 0.90x. If an item has no pack price, it is left out and the row is marked partial, so the real ratio is higher.</p></main>
+<script src="config.js"></script>
 <script src="app.js"></script>
 <script>
 header("popups.html");
-Promise.all([unitValues(), get("popups.json")]).then(([m, { popups }]) => {
+Promise.all([unitValues(), get("popups")]).then(([m, { popups }]) => {
   const rows = popups.map(p => {
     let worth = 0, missing = [];
     p.contents.forEach(c => (m[c.item] ? (worth += m[c.item].unit * c.qty) : missing.push(c.item)));

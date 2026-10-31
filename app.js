@@ -1,8 +1,49 @@
 const fmt = (n, d = 4) => (n == null ? "unpriced" : "$" + n.toFixed(d));
-const get = f => fetch("data/" + f).then(r => r.json());
+const num = s => parseFloat(String(s).replace(/[$,\s]/g, ""));
+
+function parseCSV(t) {
+  const rows = []; let r = [], c = "", q = false;
+  for (let i = 0; i < t.length; i++) {
+    const ch = t[i];
+    if (q) { if (ch === '"') { if (t[i + 1] === '"') { c += '"'; i++; } else q = false; } else c += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ",") { r.push(c); c = ""; }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && t[i + 1] === "\n") i++; r.push(c); rows.push(r); r = []; c = ""; }
+    else c += ch;
+  }
+  if (c || r.length) { r.push(c); rows.push(r); }
+  const [h, ...b] = rows.filter(x => x.some(v => v.trim()));
+  return b.map(x => Object.fromEntries(h.map((k, i) => [k.trim().toLowerCase(), (x[i] || "").trim()])));
+}
+
+async function table(name) {
+  const url = (window.SHEETS || {})[name] || `data/${name}.csv`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`the "${name}" sheet returned ${res.status}`);
+  return parseCSV(await res.text());
+}
+
+async function get(name) {
+  const rows = await table(name);
+  if (name === "values")
+    return { values: rows.filter(r => r.item).map(r => ({ item: r.item, qty: num(r.qty), usd: num(r.usd), source: r.source, superseded: /^(true|yes|1|x)$/i.test(r.superseded) })) };
+  const groups = new Map();
+  const key = name === "shops" ? "shop" : "pack";
+  for (const r of rows.filter(r => r[key] && r.item)) {
+    if (!groups.has(r[key])) groups.set(r[key], { name: r[key], price: num(r.price), limit: r.limit, list: [] });
+    groups.get(r[key]).list.push(name === "shops" ? { item: r.item, tokens: num(r.tokens) } : { item: r.item, qty: num(r.qty) });
+  }
+  return name === "shops"
+    ? { shops: [...groups.values()].map(g => ({ name: g.name, items: g.list })) }
+    : { popups: [...groups.values()].map(g => ({ name: g.name, price: g.price, limit: g.limit, contents: g.list })) };
+}
+
+window.addEventListener("unhandledrejection", e =>
+  document.querySelector("main").insertAdjacentHTML("afterbegin",
+    `<p class="bad">Couldn't load the data: ${e.reason.message}. Check the links in config.js.</p>`));
 
 async function unitValues() {
-  const { values } = await get("values.json");
+  const { values } = await get("values");
   const m = {};
   for (const v of values) if (!v.superseded) m[v.item] = { unit: v.usd / v.qty, source: v.source };
   return m;
