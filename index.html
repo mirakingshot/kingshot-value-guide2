@@ -10,9 +10,9 @@ unitValues().then(m => {
   const rows = Object.entries(m).map(([item, v]) => ({ item, unit: v.unit, per100: v.unit * 100, source: v.source }));
   render(document.getElementById("t"), [
     { key: "item", label: "Item", text: r => r.item },
-    { key: "unit", label: "$ each", text: r => fmt(r.unit) },
-    { key: "per100", label: "$ per 100", text: r => fmt(r.per100, 2) },
-    { key: "source", label: "Source pack", text: r => `<span class="dim">${r.source}</span>` }
-  ], rows, true);
+    { key: "source", label: "Source pack", text: r => `<span class="pill">${r.source}</span>` },
+    { key: "unit", label: "$ each", text: r => `<span class="strong">${fmt(r.unit)}</span>` },
+    { key: "per100", label: "$ per 100", text: r => fmt(r.per100, 2) }
+  ], rows, true, ["Item values", "Based on what regular packs charge for each item"]);
 });
 </script></body></html>

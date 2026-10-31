@@ -13,13 +13,13 @@ Promise.all([unitValues(), get("popups")]).then(([m, { popups }]) => {
     const ratio = worth / p.price;
     return { name: p.name, sample: p.sample, price: p.price, worth, ratio, missing };
   });
-  const verdict = r => r.ratio >= 1.25 ? ["Great", "good"] : r.ratio >= 0.9 ? ["Fair", ""] : ["Poor", "bad"];
+  const verdict = r => r.ratio >= 1.25 ? ["Great", "green"] : r.ratio >= 0.9 ? ["Fair", "amber"] : ["Poor", "rose"];
   render(document.getElementById("t"), [
     { key: "name", label: "Pack", text: r => r.name + (r.sample ? '<span class="tag">sample</span>' : "") },
     { key: "price", label: "Price", text: r => fmt(r.price, 2) },
     { key: "worth", label: "Worth at pack rates", text: r => fmt(r.worth, 2) + (r.missing.length ? ` <span class="dim" title="Unpriced: ${r.missing.join(", ")}">(partial)</span>` : "") },
-    { key: "ratio", label: "Ratio", text: r => r.ratio.toFixed(2) + "x" },
-    { key: "v", label: "Verdict", sort: r => r.ratio, text: r => { const [t, c] = verdict(r); return `<span class="${c}">${t}</span>`; } }
-  ], rows, false);
+    { key: "ratio", label: "Ratio", text: r => `<span class="strong">${r.ratio.toFixed(2)}x</span>` },
+    { key: "v", label: "Verdict", sort: r => r.ratio, text: r => { const [t, c] = verdict(r); return `<span class="pill ${c}">${t}</span>`; } }
+  ], rows, false, ["Pop-up packs", "Compared with the same contents at regular pack prices"]);
 });
 </script></body></html>
