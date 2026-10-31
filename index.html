@@ -3,7 +3,6 @@
 <body><main>
 <div class="card"><div class="card-head"><div><h2>Special event pack valuations</h2><p>Jump straight to the valuation for a limited-time pack.</p></div></div><div class="big-links" id="featured"></div></div>
 <div class="card"><div class="card-head"><div><h2>Explore the guide</h2><p>Everything is priced from what regular packs charge.</p></div></div><div class="big-links" id="explore"></div></div>
-<div id="board"></div>
 </main>
 <script src="config.js"></script>
 <script src="app.js"></script>
@@ -37,15 +36,5 @@ Promise.all([unitValues(), get("shops"), get("popups"), get("featured").catch(()
     ["build.html", "calc", "Pack builder", "Check any pack by typing in its items and price."],
     ["masterlist.html", "list", "Masterlist", "The dollar value of every upgrade item."]
   ].map(l => bigLink(...l)).join("");
-  if (!packs.length) {
-    document.getElementById("board").innerHTML = `<div class="card"><h2>Pop-up pack scoreboard</h2><p class="dim">No general pop-up packs yet. Holiday event packs are on the <a href="event.html">Special events</a> page.</p></div>`;
-    return;
-  }
-  render(document.getElementById("board"), [
-    { key: "name", label: "Pack", text: r => r.name },
-    { key: "price", label: "Price", text: r => fmt(r.price, 2) },
-    { key: "ratio", label: "Ratio", text: r => `<span class="strong">${r.ratio.toFixed(2)}x</span>` },
-    { key: "v", label: "Verdict", sort: r => r.ratio, text: r => { const [t, c] = verdict(r); return `<span class="pill ${c}">${t}</span>`; } }
-  ], packs, false, ["Pop-up pack scoreboard", "Best value first. Click a pack to see what is inside."], ["ratio", -1], packDetail);
 });
 </script></body></html>

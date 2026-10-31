@@ -8,6 +8,8 @@ body{margin:0;min-height:100vh;color:var(--ink);font:15px/1.5 system-ui,-apple-s
 nav{display:flex;flex-direction:column;gap:4px}
 nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;color:var(--mute);text-decoration:none;font-weight:500}
 nav a svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+nav a.aside{margin-top:22px;padding:8px 14px;font-size:.82rem;gap:10px}
+nav a.aside svg{width:16px;height:16px}
 nav a:hover{background:rgba(124,92,230,.07)}
 nav a[aria-current]{background:linear-gradient(90deg,#e8e0ff,#f2ecff);color:var(--lav-ink);font-weight:700}
 nav a:focus-visible,input:focus-visible,th button:focus-visible,.shop-summary:focus-visible{outline:2px solid var(--violet);outline-offset:3px}
@@ -121,5 +123,5 @@ details.card{scroll-margin-top:20px}
 @media(max-width:860px){
 .side{position:static;width:auto;margin:12px;flex-direction:row;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 12px;border-radius:20px}
 .brand{padding:0 10px 0 4px}.tagline{display:none}
-nav{flex-direction:row;flex-wrap:wrap;width:100%;gap:4px}nav a{flex:1 1 auto;justify-content:center;padding:9px 8px;font-size:.82rem;white-space:nowrap}nav a svg{display:none}
+nav{flex-direction:row;flex-wrap:wrap;width:100%;gap:4px}nav a.aside{margin-top:0;font-size:.78rem}nav a{flex:1 1 auto;justify-content:center;padding:9px 8px;font-size:.82rem;white-space:nowrap}nav a svg{display:none}
 main{margin:0;padding:8px 16px 40px}h1{font-size:2rem}}

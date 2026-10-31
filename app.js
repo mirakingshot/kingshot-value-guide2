@@ -58,6 +58,7 @@ const ICONS = {
   bars: '<path d="M6 20V11M12 20V5M18 20v-6"/>',
   gem: '<path d="M12 3l8 6-8 12L4 9z"/><path d="M4 9h16"/>',
   calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h1M12 12h1M16 12h0M8 16h1M12 16h1M16 16h0"/>',
+  link: '<path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/>',
   star: '<path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.5 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/>',
   home: '<path d="M4 11l8-7 8 7v9a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z"/>',
   go: '<path d="M5 12h14M13 6l6 6-6 6"/>'
@@ -72,14 +73,15 @@ function header(active) {
     ["shops.html", "Event shops", "bag", "Currency shops from recurring minigame events, ranked by dollars of value per token."],
     ["popups.html", "Pop-up packs", "gift", "How special event packs compare with the same contents at regular prices."],
     ["build.html", "Pack builder", "calc", "Type in a pack's items and price to see how it compares with regular packs."],
-    ["masterlist.html", "Masterlist", "list", "What every upgrade item is worth in dollars, based on regular packs."]
+    ["masterlist.html", "Masterlist", "list", "What every upgrade item is worth in dollars, based on regular packs."],
+    ["others.html", "Other Pages by Mira", "link", "More Kingshot tools I built."]
   ];
   const cur = pages.find(p => p[0] === active);
   const logo = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5fa8"/><stop offset="1" stop-color="#7c5ce6"/></linearGradient></defs><path d="M16 3l11 8-11 18L5 11z" fill="url(#lg)"/></svg>`;
   document.body.insertAdjacentHTML("afterbegin",
     `<aside class="side"><div class="brand">${logo}<span>Mira’s KS<small>Value Guide</small></span></div>
-    <nav aria-label="Pages">${pages.map(([h, t, i]) => `<a href="${h}"${h === active ? " aria-current=page" : ""}>${icon(i)}${t}</a>`).join("")}</nav>
-    <p class="tagline">Know what every pack is really worth.</p></aside>`);
+    <nav aria-label="Pages">${pages.map(([h, t, i]) => `<a href="${h}"${h === "others.html" ? " class=aside" : ""}${h === active ? " aria-current=page" : ""}>${icon(i)}${t}</a>`).join("")}</nav>
+    <p class="tagline">Built on #1551 pack data. May or may not be relevant to other kingdoms.</p></aside>`);
   document.querySelector("main").insertAdjacentHTML("afterbegin",
     `<p class="eyebrow">Mira’s KS Value Guide</p><h1>${cur[1]}</h1><p class="sub">${cur[3]}</p><div class="stats" id="stats"></div>`);
   document.querySelector("main").insertAdjacentHTML("beforeend", `<footer class="credits">made with love by Mira [221330479]</footer>`);
