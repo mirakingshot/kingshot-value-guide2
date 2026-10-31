@@ -1,7 +1,12 @@
 {
-  "_note": "contents use item names from values.json. Remove the SAMPLE entry and add real pop-up packs.",
+  "_note": "contents use item names from values.json. Items without a value are shown as partial until priced.",
   "popups": [
-    {"name": "SAMPLE - replace me", "price": 4.99, "sample": true,
-     "contents": [{"item": "Gems", "qty": 5000}, {"item": "1hr General Speed", "qty": 20}, {"item": "Forgehammer", "qty": 10}]}
+    {"name": "Candy Party Pack VI", "price": 99.99, "limit": 1,
+     "contents": [
+       {"item": "Gems", "qty": 50000},
+       {"item": "Halloween Custom Chest", "qty": 192},
+       {"item": "Truegold", "qty": 720},
+       {"item": "1hr General Speed", "qty": 350}
+     ]}
   ]
 }
