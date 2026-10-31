@@ -1,0 +1,7 @@
+{
+  "_note": "contents use item names from values.json. Remove the SAMPLE entry and add real pop-up packs.",
+  "popups": [
+    {"name": "SAMPLE - replace me", "price": 4.99, "sample": true,
+     "contents": [{"item": "Gems", "qty": 5000}, {"item": "1hr General Speed", "qty": 20}, {"item": "Forgehammer", "qty": 10}]}
+  ]
+}

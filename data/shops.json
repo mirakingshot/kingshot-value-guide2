@@ -1,0 +1,22 @@
+{
+  "shops": [
+    {
+      "name": "Tidal Shop",
+      "items": [
+        {"item": "100 XP Enhancement", "tokens": 250},
+        {"item": "1hr General Speed", "tokens": 250},
+        {"item": "Growth Manual", "tokens": 150},
+        {"item": "Advanced Taming Mark", "tokens": 3000},
+        {"item": "Nutrient Potion", "tokens": 750},
+        {"item": "Promotion Medallion", "tokens": 1500},
+        {"item": "Mythic General Hero Shard", "tokens": 2500},
+        {"item": "Forgehammer", "tokens": 1250},
+        {"item": "Charm Guide", "tokens": 500},
+        {"item": "Charm Design", "tokens": 500},
+        {"item": "Gilded Threads", "tokens": 100},
+        {"item": "Satin", "tokens": 1},
+        {"item": "Artisans Vision", "tokens": 500}
+      ]
+    }
+  ]
+}

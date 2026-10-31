@@ -1,0 +1,17 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Item values - Kingshot Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<body><main><div id="t"></div>
+<p class="note">Each value is the share of a regular pack's price assigned to the item, divided by its quantity. Sources are listed per item. Last updated: see README.</p></main>
+<script src="app.js"></script>
+<script>
+header("index.html");
+unitValues().then(m => {
+  const rows = Object.entries(m).map(([item, v]) => ({ item, unit: v.unit, per100: v.unit * 100, source: v.source }));
+  render(document.getElementById("t"), [
+    { key: "item", label: "Item", text: r => r.item },
+    { key: "unit", label: "$ each", text: r => fmt(r.unit) },
+    { key: "per100", label: "$ per 100", text: r => fmt(r.per100, 2) },
+    { key: "source", label: "Source pack", text: r => `<span class="dim">${r.source}</span>` }
+  ], rows, true);
+});
+</script></body></html>
