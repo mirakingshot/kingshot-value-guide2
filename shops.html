@@ -1,36 +1,59 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Event shops - Kingshot Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<title>Event shops - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css"></head>
 <body><main><div id="shops"></div>
 <p class="note">Token value is the best $ per token in the shop, since that is what a token is worth if spent well. "% of best" compares every item to it. Items with no pack price are unpriced. Assumes 1 unit per purchase.</p></main>
 <script src="config.js"></script>
 <script src="app.js"></script>
 <script>
 header("shops.html");
-Promise.all([unitValues(), get("shops")]).then(([m, { shops }]) => {
+Promise.all([unitValues(), get("shops")]).then(([m, { shops: all }]) => {
+  const shops = all.filter(s => !s.event);
   const root = document.getElementById("shops");
-  shops.forEach((s) => {
-    const rows = s.items.map(x => {
-      const u = m[x.item] ? m[x.item].unit : null;
-      return { item: x.item, tokens: x.tokens, unit: u, perToken: u == null ? null : u / x.tokens };
-    });
-    const best = Math.max(...rows.map(r => r.perToken || 0));
-    rows.forEach(r => (r.pct = r.perToken == null ? null : r.perToken / best));
+  let bestAll = 0, unpriced = 0;
+  const ids = [];
+  shops.forEach((s, i) => {
+    const slug = s.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const id = slug && !ids.includes(slug) ? slug : "shop-" + i;
+    ids.push(id);
+    const v = shopView(m, s);
+    bestAll = Math.max(bestAll, v.best);
+    unpriced += v.unpriced;
 
     const sec = document.createElement("details");
     sec.className = "card";
+    sec.id = id;
     sec.innerHTML = `
-      <summary class="shop-summary"><h2>${s.name}</h2></summary>
+      <summary class="shop-summary"><h2>${esc(s.name)}</h2></summary>
       <div class="shop-table"></div>
     `;
     root.appendChild(sec);
 
-    render(sec.querySelector(".shop-table"), [
-      { key: "item", label: "Item", text: r => r.item },
-      { key: "tokens", label: "Tokens", text: r => r.tokens.toLocaleString() },
-      { key: "unit", label: "Baseline", text: r => fmt(r.unit) },
-      { key: "perToken", label: "$ per token", text: r => `<span class="strong">${fmt(r.perToken, 6)}</span>` },
-      { key: "pct", label: "% of best", text: r => r.pct == null ? `<span class="pill amber">unpriced</span>` : Math.round(r.pct * 100) + "%<span class=meter style=\"width:" + Math.round(r.pct * 60) + "px\"></span>" }
-    ], rows, false);
+    render(sec.querySelector(".shop-table"), shopCols, v.rows, false);
   });
+  const bar = document.createElement("div");
+  bar.className = "pillbar"; bar.setAttribute("role", "navigation"); bar.setAttribute("aria-label", "Jump to a shop");
+  bar.innerHTML = `<span class="chip-label">Jump to</span>` + shops.map((s, i) => `<a class="chip" href="#${ids[i]}">${esc(s.name)}</a>`).join("");
+  document.getElementById("stats").before(bar);
+  const go = id => {
+    const d = document.getElementById(id);
+    if (!d) return;
+    d.open = true;
+    bar.querySelectorAll(".chip").forEach(c => c.getAttribute("href") === "#" + id ? c.setAttribute("aria-current", "true") : c.removeAttribute("aria-current"));
+    d.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+  };
+  bar.addEventListener("click", e => {
+    const a = e.target.closest(".chip");
+    if (!a) return;
+    e.preventDefault();
+    const id = a.getAttribute("href").slice(1);
+    history.replaceState(null, "", "#" + id);
+    go(id);
+  });
+  if (location.hash) go(decodeURIComponent(location.hash.slice(1)));
+  stats([
+    ["Shops tracked", shops.length, "bag", ""],
+    ["Best value per token", fmt(bestAll, 6), "bars", "pink"],
+    ["Unpriced items", unpriced, "list", "peach"]
+  ]);
 });
 </script></body></html>

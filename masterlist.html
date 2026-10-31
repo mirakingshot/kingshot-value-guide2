@@ -1,0 +1,22 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masterlist - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<body><main><div id="t"></div>
+<p class="note">Each value is the share of a regular pack's price assigned to the item, divided by its quantity. Sources are listed per item. Last updated: see README.</p></main>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+header("masterlist.html");
+unitValues().then(m => {
+  const rows = Object.entries(m).map(([item, v]) => ({ item, unit: v.unit, source: v.source }));
+  stats([
+    ["Items valued", rows.length, "list", ""],
+    ["Source packs", new Set(rows.map(r => r.source)).size, "gift", "pink"],
+    ...(m.Gems ? [["Value of 1,000 gems", fmt(m.Gems.unit * 1000, 2), "gem", "peach"]] : [])
+  ]);
+  render(document.getElementById("t"), [
+    { key: "item", label: "Item", text: r => r.item },
+    { key: "source", label: "Source", text: r => `<span class="pill ${hue(r.source)}">${r.source}</span>` },
+    { key: "unit", label: "Baseline", text: r => `<span class="strong">${fmt(r.unit)}</span>` }
+  ], rows, true, ["Item values", "Based on what regular packs charge for each item"]);
+});
+</script></body></html>

@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pack builder - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<body><main>
+<div class="card" id="builder">
+  <div class="card-head"><div><h2>Your pack</h2><p>Type each item from the masterlist with its quantity, then the total price.</p></div>
+    <label class="price-field" for="price"><span>Total pack price</span><span class="money"><span aria-hidden="true">$</span><input id="price" type="number" min="0" step="0.01" inputmode="decimal" value="4.99"></span></label></div>
+  <datalist id="items"></datalist>
+  <div id="rows" class="brows"></div>
+  <div class="b-actions"><button type="button" class="btn" id="add">Add item</button><button type="button" class="btn ghost" id="clear">Clear all</button></div>
+</div>
+<div id="result"></div>
+<p class="note">Worth is what the same items cost at regular pack rates from the masterlist. Items that are not in the masterlist cannot be priced, so they are left out and the real ratio is higher. The rows start with an example pack.</p>
+</main>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+header("build.html");
+unitValues().then(m => {
+  const lower = new Map(Object.keys(m).map(k => [k.toLowerCase(), k]));
+  document.getElementById("items").innerHTML = Object.keys(m).sort().map(k => `<option value="${esc(k)}"></option>`).join("");
+  const rowsEl = document.getElementById("rows"), priceEl = document.getElementById("price");
+
+  function addRow(item = "", qty = "") {
+    const d = document.createElement("div");
+    d.className = "brow";
+    d.innerHTML = `<input class="b-item" list="items" placeholder="Item name" aria-label="Item" autocomplete="off" value="${esc(item)}">` +
+      `<input class="b-qty" type="number" min="0" step="any" inputmode="decimal" placeholder="Qty" aria-label="Quantity" value="${esc(qty)}">` +
+      `<span class="b-worth"></span><button type="button" class="b-del" aria-label="Remove this item">×</button>`;
+    rowsEl.appendChild(d);
+    return d;
+  }
+
+  function calc() {
+    const lines = []; const unknown = [];
+    rowsEl.querySelectorAll(".brow").forEach(r => {
+      const name = r.querySelector(".b-item").value.trim();
+      const qty = num(r.querySelector(".b-qty").value);
+      const key = lower.get(name.toLowerCase());
+      const w = r.querySelector(".b-worth");
+      if (!name || !(qty >= 0)) { w.innerHTML = ""; return; }
+      const u = key ? m[key].unit : null;
+      if (!key) unknown.push(name);
+      lines.push({ item: key || name, qty, unit: u, worth: u == null ? null : u * qty });
+      w.innerHTML = u == null ? '<span class="pill amber">not in masterlist</span>' : `<span class="strong">${fmt(u * qty, 2)}</span>`;
+    });
+    const worth = lines.reduce((a, l) => a + (l.worth || 0), 0);
+    const price = num(priceEl.value);
+    const res = document.getElementById("result");
+    if (!lines.length || !(price > 0)) {
+      stats([["Pack price", price > 0 ? fmt(price, 2) : "-", "gift", ""], ["Worth at baseline", fmt(worth, 2), "gem", "pink"], ["Ratio", "-", "bars", "peach"], ["Verdict", "-", "star", ""]]);
+      res.innerHTML = `<div class="card"><p class="dim">Enter a total price and at least one item with a quantity to see how the pack compares.</p></div>`;
+      return;
+    }
+    const r = { lines, worth, price, ratio: worth / price, limit: "", missing: unknown };
+    const [vt, vc] = verdict(r);
+    stats([["Pack price", fmt(price, 2), "gift", ""], ["Worth at baseline", fmt(worth, 2), "gem", "pink"], ["Ratio", r.ratio.toFixed(2) + "x", "bars", "peach"], ["Verdict", vt, "star", ""]]);
+    const pct = Math.round(Math.abs(r.ratio - 1) * 100);
+    const line = r.ratio >= 1
+      ? `You get about <strong>${pct}% more</strong> than regular packs would give you for this price.`
+      : `You get about <strong>${pct}% less</strong> than regular packs would give you for this price.`;
+    res.innerHTML = `<div class="card"><div class="card-head"><div><h2>How it compares <span class="pill ${vc}">${vt}</span></h2><p>${line} A fair price for these items is ${fmt(worth, 2)}.</p></div></div>${packDetail(r)}</div>`;
+  }
+
+  addRow("Gems", "10000"); addRow("Truegold", "60"); addRow();
+  calc();
+  document.getElementById("builder").addEventListener("input", calc);
+  document.getElementById("add").addEventListener("click", () => { addRow().querySelector(".b-item").focus(); });
+  document.getElementById("clear").addEventListener("click", () => { rowsEl.innerHTML = ""; addRow(); priceEl.value = ""; calc(); rowsEl.querySelector(".b-item").focus(); });
+  rowsEl.addEventListener("click", e => {
+    const b = e.target.closest(".b-del"); if (!b) return;
+    b.parentElement.remove(); if (!rowsEl.children.length) addRow(); calc();
+  });
+});
+</script></body></html>

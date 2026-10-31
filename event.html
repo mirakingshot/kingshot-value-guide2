@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Special events - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<body><main><div id="body"></div></main>
+<script src="config.js"></script>
+<script src="app.js"></script>
+<script>
+header("event.html");
+Promise.all([unitValues(), get("shops"), get("popups")]).then(([m, { shops }, { popups }]) => {
+  const packs = scorePacks(m, popups);
+  const events = new Map();
+  const slot = n => {
+    const k = n.trim().toLowerCase();
+    if (!events.has(k)) events.set(k, { name: n.trim(), shops: [], packs: [] });
+    return events.get(k);
+  };
+  shops.filter(s => s.event).forEach(s => slot(s.event).shops.push(s));
+  packs.filter(p => p.event).forEach(p => slot(p.event).packs.push(p));
+  const want = new URLSearchParams(location.search).get("e");
+  const body = document.getElementById("body");
+  const plural = (n, w) => n + " " + w + (n === 1 ? "" : "s");
+
+  if (!want) {
+    const list = [...events.values()];
+    stats([
+      ["Events tracked", list.length, "star", ""],
+      ["Currency shops in events", list.reduce((a, e) => a + e.shops.length, 0), "bag", "pink"],
+      ["Pop-up packs in events", list.reduce((a, e) => a + e.packs.length, 0), "gift", "peach"]
+    ]);
+    body.innerHTML = `<div class="card"><div class="card-head"><div><h2>Choose an event</h2><p>Holiday and limited-time events, each with its currency shop and pop-up packs on one page.</p></div></div>` +
+      (list.length
+        ? `<div class="big-links">${list.map(e => bigLink("event.html?e=" + encodeURIComponent(e.name), "star", e.name, plural(e.shops.length, "currency shop") + ", " + plural(e.packs.length, "pop-up pack"))).join("")}</div>`
+        : `<p class="dim">No events yet. Type a holiday event name, such as Halloween, in the event column of its pop-up packs and currency shop rows in your sheet and it will show up here.</p>`) + `</div>`;
+    return;
+  }
+
+  const ev = events.get(want.trim().toLowerCase());
+  if (!ev) {
+    stats([]);
+    body.innerHTML = `<div class="card"><p>That event was not found. <a href="event.html">See all special events</a>.</p></div>`;
+    return;
+  }
+  document.title = ev.name + " - Mira’s KS Value Guide";
+  document.querySelector("h1").textContent = ev.name;
+  document.querySelector(".eyebrow").innerHTML = `<a href="event.html">Special events</a> / ${esc(ev.name)}`;
+  document.querySelector(".sub").textContent = "Currency shop and pop-up packs for this event, valued at regular pack prices.";
+  const views = ev.shops.map(s => shopView(m, s));
+  stats([
+    ["Pop-up packs", ev.packs.length, "gift", ""],
+    ["Best pack ratio", ev.packs.length ? Math.max(...ev.packs.map(p => p.ratio)).toFixed(2) + "x" : "none yet", "bars", "pink"],
+    ["Currency shops", views.length, "bag", "peach"],
+    ["Best currency value", views.length ? fmt(Math.max(...views.map(v => v.best)), 6) : "none yet", "gem", ""]
+  ]);
+  body.innerHTML = `<div id="packs"></div><h2 class="section-label">Currency shop</h2><div id="shops"></div>
+    <p class="note">Pack worth is what the same contents cost at regular pack rates. Currency value is the best $ per token in each shop.</p>`;
+  if (ev.packs.length)
+    render(document.getElementById("packs"), packCols, ev.packs, false, ["Pop-up packs", "Click a pack to see what is inside."], ["ratio", -1], packDetail);
+  else document.getElementById("packs").innerHTML = `<div class="card"><h2>Pop-up packs</h2><p class="dim">No pop-up packs for this event yet.</p></div>`;
+  const shopsEl = document.getElementById("shops");
+  if (!views.length) shopsEl.innerHTML = `<div class="card"><p class="dim">No currency shop for this event yet.</p></div>`;
+  views.forEach(v => {
+    const sec = document.createElement("details");
+    sec.className = "card"; sec.open = true;
+    sec.innerHTML = `<summary class="shop-summary"><h2>${esc(v.name)}</h2></summary><div class="shop-table"></div>`;
+    shopsEl.appendChild(sec);
+    render(sec.querySelector(".shop-table"), shopCols, v.rows, false);
+  });
+});
+</script></body></html>

@@ -1,5 +1,5 @@
-pack,price,limit,item,qty
-Candy Party Pack VI,99.99,1,Gems,50000
-Candy Party Pack VI,99.99,1,Halloween Custom Chest,192
-Candy Party Pack VI,99.99,1,Truegold,720
-Candy Party Pack VI,99.99,1,1hr General Speed,350
+pack,price,limit,item,qty,event
+Candy Party Pack VI,99.99,1,Gems,50000,Halloween
+Candy Party Pack VI,99.99,1,Halloween Custom Chest,192,Halloween
+Candy Party Pack VI,99.99,1,Truegold,720,Halloween
+Candy Party Pack VI,99.99,1,1hr General Speed,350,Halloween
