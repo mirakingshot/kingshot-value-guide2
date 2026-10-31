@@ -95,6 +95,7 @@ a.pill{text-decoration:none}
 .meter{display:inline-block;height:8px;background:linear-gradient(90deg,#ff7ab8,#7c5ce6);border-radius:99px;vertical-align:middle;margin-left:10px}
 .tag{font-size:.75rem;background:var(--amber-bg);color:var(--amber-ink);border-radius:99px;padding:1px 8px;margin-left:6px}
 .credits{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);text-align:center;color:var(--mute);font-size:.85rem}
+.credits a{color:inherit;text-decoration:none;font-weight:700}
 .note a,.card p a{color:var(--lav-ink);font-weight:600}
 .note{color:var(--mute);font-size:.88rem;margin:14px 4px 0}
 .pillbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;max-height:210px;overflow-y:auto;padding:10px 12px;margin:22px 0 4px;border-radius:20px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px);border:1px solid #fff;box-shadow:0 8px 28px rgba(120,90,200,.10)}

@@ -84,7 +84,7 @@ function header(active) {
     <p class="tagline">Built on #1551 pack data. May or may not be relevant to other kingdoms.</p></aside>`);
   document.querySelector("main").insertAdjacentHTML("afterbegin",
     `<p class="eyebrow">Mira’s KS Value Guide</p><h1>${cur[1]}</h1><p class="sub">${cur[3]}</p><div class="stats" id="stats"></div>`);
-  document.querySelector("main").insertAdjacentHTML("beforeend", `<footer class="credits">made with love by Mira [221330479]</footer>`);
+  document.querySelector("main").insertAdjacentHTML("beforeend", `<footer class="credits">made with love by <a href="https://mirakingshot.github.io/">Mira [221330479]</a></footer>`);
 }
 
 // list: [[label, value, iconKey, tone("" | "pink" | "peach")]]
