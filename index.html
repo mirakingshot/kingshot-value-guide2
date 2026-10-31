@@ -1,7 +1,6 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-
-<title>Dashboard - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css">
-<main>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard - Mira’s KS Value Guide</title><link rel="stylesheet" href="style.css"></head>
+<body><main>
 <div class="card"><div class="card-head"><div><h2>Special event pack valuations</h2><p>Jump straight to the valuation for a limited-time pack.</p></div></div><div class="big-links" id="featured"></div></div>
 <div class="card"><div class="card-head"><div><h2>Explore the guide</h2><p>Everything is priced from what regular packs charge.</p></div></div><div class="big-links" id="explore"></div></div>
 <div id="board"></div>
@@ -40,6 +39,4 @@ Promise.all([unitValues(), get("shops"), get("popups"), get("featured").catch(()
     { key: "v", label: "Verdict", sort: r => r.ratio, text: r => { const [t, c] = verdict(r); return `<span class="pill ${c}">${t}</span>`; } }
   ], packs, false, ["Pop-up pack scoreboard", "Best value first. Click a pack to see what is inside."], ["ratio", -1], packDetail);
 });
-</script>
-
-</body></html>
+</script></body></html>
