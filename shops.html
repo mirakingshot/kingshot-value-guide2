@@ -8,23 +8,29 @@
 header("shops.html");
 Promise.all([unitValues(), get("shops")]).then(([m, { shops }]) => {
   const root = document.getElementById("shops");
-  shops.forEach((s, i) => {
+  shops.forEach((s) => {
     const rows = s.items.map(x => {
       const u = m[x.item] ? m[x.item].unit : null;
       return { item: x.item, tokens: x.tokens, unit: u, perToken: u == null ? null : u / x.tokens };
     });
     const best = Math.max(...rows.map(r => r.perToken || 0));
     rows.forEach(r => (r.pct = r.perToken == null ? null : r.perToken / best));
-    const sec = document.createElement("section");
-    sec.innerHTML = "<div></div>";
+
+    const sec = document.createElement("details");
+    sec.className = "card";
+    sec.innerHTML = `
+      <summary class="shop-summary"><h2>${s.name}</h2></summary>
+      <div class="shop-table"></div>
+    `;
     root.appendChild(sec);
-    render(sec.querySelector("div"), [
+
+    render(sec.querySelector(".shop-table"), [
       { key: "item", label: "Item", text: r => r.item },
       { key: "tokens", label: "Tokens", text: r => r.tokens.toLocaleString() },
       { key: "unit", label: "$ each", text: r => fmt(r.unit) },
       { key: "perToken", label: "$ per token", text: r => `<span class="strong">${fmt(r.perToken, 6)}</span>` },
       { key: "pct", label: "% of best", text: r => r.pct == null ? `<span class="pill amber">unpriced</span>` : Math.round(r.pct * 100) + "%<span class=meter style=\"width:" + Math.round(r.pct * 60) + "px\"></span>" }
-    ], rows, false, [s.name, `A token is worth about ${fmt(best, 6)}, so 1,000 tokens are worth about ${fmt(best * 1000, 2)}.`]);
+    ], rows, false);
   });
 });
 </script></body></html>

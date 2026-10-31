@@ -15,6 +15,13 @@ section{margin-bottom:24px}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:16px}
 .card-head h2{font-size:1.15rem;font-weight:700;margin:0}
 .card-head p{margin:2px 0 0;color:var(--mute);font-size:.9rem}
+.shop-summary{display:flex;align-items:center;gap:10px;cursor:pointer;list-style:none}
+.shop-summary::-webkit-details-marker{display:none}
+.shop-summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--lav-bg);color:var(--lav-ink);font-weight:700}
+details[open]>.shop-summary{margin-bottom:16px}
+details[open]>.shop-summary::before{content:"−"}
+.shop-summary h2{font-size:1.15rem;font-weight:700;margin:0}
+.shop-summary:focus-visible{outline:2px solid var(--violet);outline-offset:4px;border-radius:4px}
 input{width:220px;max-width:100%;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;box-shadow:0 1px 3px rgba(60,50,130,.08)}
 .wrap{overflow-x:auto}
 table{border-collapse:separate;border-spacing:0;width:100%;font-variant-numeric:tabular-nums}
